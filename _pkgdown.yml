@@ -1,0 +1,40 @@
+url: https://sorrychoe.github.io/topicovertime/
+
+home:
+  title: Topics over Time for R
+
+authors:
+  Jaeseong Choe:
+    href: https://github.com/sorrychoe
+
+template:
+  bootstrap: 5
+  bootswatch: flatly
+
+reference:
+- title: about topicovertime
+  desc:  topicovertime fits the Topics over Time model of Wang and McCallum (2006) in R.
+  contents:
+  - topicovertime-package
+- subtitle: model fitting
+  contents:
+  - tot
+- subtitle: post-estimation
+  contents:
+  - terms.tot
+  - topic_time
+  - predict.tot
+  - plot.tot
+- subtitle: simulation
+  contents:
+  - simulate_tot
+
+articles:
+- title: Get started
+  contents:
+  - topicovertime
+
+footer:
+  structure:
+    left: developed_by
+    right: built_with

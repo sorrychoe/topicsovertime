@@ -1,0 +1,75 @@
+---
+title: "Getting started with topicovertime"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started with topicovertime}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7,
+                      fig.height = 4)
+has_quanteda <- requireNamespace("quanteda", quietly = TRUE)
+```
+
+Topics over Time (TOT; Wang and McCallum, 2006) is a topic model in which
+every topic has, besides its distribution over words, a Beta distribution over
+continuous time. Topics are therefore found jointly from word co-occurrence and
+from *when* documents were written. Time is neither discretized nor modelled
+with Markov dynamics, and the meaning of a topic is constant: what changes over
+time is how often each topic occurs.
+
+## A simulated corpus
+
+```{r sim}
+library(topicovertime)
+set.seed(1)
+sim <- simulate_tot(n_docs = 300, n_topics = 3)
+fit <- tot(sim$x, sim$time, k = 3, n_iter = 200)
+fit
+fit$psi        # Beta parameters on the normalized time scale
+plot(fit)      # P(topic | time)
+```
+
+## U.S. presidential inaugural addresses
+
+The paper analyses State of the Union addresses; the inaugural addresses
+shipped with quanteda are a similar corpus spanning more than two centuries.
+
+```{r inaugural, eval = has_quanteda}
+library(quanteda)
+toks <- tokens(data_corpus_inaugural, remove_punct = TRUE,
+               remove_numbers = TRUE)
+toks <- tokens_remove(tokens_tolower(toks), stopwords("en"))
+x <- dfm_trim(dfm(toks), min_termfreq = 5)
+year <- docvars(data_corpus_inaugural, "Year")
+
+set.seed(2026)
+fit <- tot(x, year, k = 8, n_iter = 300)
+terms(fit, 8)
+plot(fit)
+```
+
+`predict()` folds new documents into a fitted model; `type = "time"` predicts
+when a document was written:
+
+```{r predict, eval = has_quanteda}
+pred <- predict(fit, x, type = "time")
+head(data.frame(actual = year, predicted = round(pred)))
+cor(pred, year)
+```
+
+## Balancing words and time
+
+Each token carries the document's timestamp, so a long document's time
+contributes many times to the likelihood. `time_weight` rescales that
+contribution: `1` is the sampler exactly as in the paper, and
+`"inverse_length"` counts each timestamp once per document. The paper notes
+that results are sensitive to this setting and recommends tuning it.
+
+## Reference
+
+Wang, X. and McCallum, A. (2006). Topics over time: a non-Markov
+continuous-time model of topical trends. *KDD '06*, 424--433.
+<https://doi.org/10.1145/1150402.1150450>

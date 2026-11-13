@@ -1,0 +1,11 @@
+^topicovertime\.Rproj$
+^\.Rproj\.user$
+^doc$
+^Meta$
+^\.github$
+^\.gitignore$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^paper$
+^cran-comments\.md$

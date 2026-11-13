@@ -1,0 +1,37 @@
+Package: topicovertime
+Type: Package
+Title: Topics over Time: A Continuous-Time Topic Model
+Version: 0.1.0
+Authors@R: person("Jaeseong", "Choe", email = "cjssoote@gmail.com",
+    role = c("aut", "cre", "cph"))
+Description: Fits the Topics over Time model of Wang and McCallum (2006)
+    <doi:10.1145/1150402.1150450>, a latent Dirichlet allocation style topic
+    model in which each topic also has a Beta distribution over continuous
+    time, so topics are shaped by both word co-occurrence and document
+    timestamps without discretizing time or assuming Markov dynamics.
+    Inference uses collapsed Gibbs sampling implemented in 'C++'. Includes
+    prediction of topic proportions and timestamps for new documents, topic
+    trends over time, and simulation of synthetic corpora.
+License: MIT + file LICENSE
+URL: https://sorrychoe.github.io/topicovertime/,
+    https://github.com/sorrychoe/topicovertime
+BugReports: https://github.com/sorrychoe/topicovertime/issues
+Encoding: UTF-8
+Depends: R (>= 4.1.0)
+Imports:
+    graphics,
+    Matrix,
+    methods,
+    Rcpp,
+    stats
+LinkingTo:
+    Rcpp
+Suggests:
+    knitr,
+    quanteda,
+    rmarkdown,
+    testthat (>= 3.0.0)
+VignetteBuilder: knitr
+Config/testthat/edition: 3
+Roxygen: list(markdown = TRUE)
+Config/roxygen2/version: 8.1.1
