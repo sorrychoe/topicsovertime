@@ -16,7 +16,7 @@ has_quanteda <- requireNamespace("quanteda", quietly = TRUE)
 Topics over Time (TOT; Wang and McCallum, 2006) is a topic model in which
 every topic has, besides its distribution over words, a Beta distribution over
 continuous time. Topics are therefore found jointly from word co-occurrence and
-from *when* documents were written. Time is neither discretized nor modelled
+from *when* documents were written. Time is neither discretized nor modeled
 with Markov dynamics, and the meaning of a topic is constant: what changes over
 time is how often each topic occurs.
 

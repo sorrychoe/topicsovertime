@@ -8,7 +8,7 @@ distribution over words, a **Beta distribution over continuous time**. Topics
 are found jointly from word co-occurrence and from *when* documents were
 written:
 
-- Time is neither discretized nor modelled with Markov dynamics, so there is
+- Time is neither discretized nor modeled with Markov dynamics, so there is
   no time-slice size to choose.
 - The meaning (word distribution) of a topic stays constant. What changes over
   time is how often each topic occurs.

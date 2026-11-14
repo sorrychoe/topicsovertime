@@ -17,6 +17,7 @@ URL: https://sorrychoe.github.io/topicsovertime/,
     https://github.com/sorrychoe/topicsovertime
 BugReports: https://github.com/sorrychoe/topicsovertime/issues
 Encoding: UTF-8
+Language: en-US
 Depends: R (>= 4.1.0)
 Imports:
     graphics,
