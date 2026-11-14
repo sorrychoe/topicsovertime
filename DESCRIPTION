@@ -1,4 +1,4 @@
-Package: topicovertime
+Package: topicsovertime
 Type: Package
 Title: Topics over Time: A Continuous-Time Topic Model
 Version: 0.1.0
@@ -13,9 +13,9 @@ Description: Fits the Topics over Time model of Wang and McCallum (2006)
     prediction of topic proportions and timestamps for new documents, topic
     trends over time, and simulation of synthetic corpora.
 License: MIT + file LICENSE
-URL: https://sorrychoe.github.io/topicovertime/,
-    https://github.com/sorrychoe/topicovertime
-BugReports: https://github.com/sorrychoe/topicovertime/issues
+URL: https://sorrychoe.github.io/topicsovertime/,
+    https://github.com/sorrychoe/topicsovertime
+BugReports: https://github.com/sorrychoe/topicsovertime/issues
 Encoding: UTF-8
 Depends: R (>= 4.1.0)
 Imports:

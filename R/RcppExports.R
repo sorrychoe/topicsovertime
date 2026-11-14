@@ -2,10 +2,10 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 tot_gibbs_cpp <- function(words, doc_ptr, time, weight, K, V, alpha, beta, n_iter, verbose) {
-    .Call(`_topicovertime_tot_gibbs_cpp`, words, doc_ptr, time, weight, K, V, alpha, beta, n_iter, verbose)
+    .Call(`_topicsovertime_tot_gibbs_cpp`, words, doc_ptr, time, weight, K, V, alpha, beta, n_iter, verbose)
 }
 
 tot_foldin_cpp <- function(words, doc_ptr, time, weight, phi, psi, alpha, n_iter) {
-    .Call(`_topicovertime_tot_foldin_cpp`, words, doc_ptr, time, weight, phi, psi, alpha, n_iter)
+    .Call(`_topicsovertime_tot_foldin_cpp`, words, doc_ptr, time, weight, phi, psi, alpha, n_iter)
 }
 

@@ -1,4 +1,4 @@
 library(testthat)
-library(topicovertime)
+library(topicsovertime)
 
-test_check("topicovertime")
+test_check("topicsovertime")

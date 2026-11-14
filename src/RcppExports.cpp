@@ -12,7 +12,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 
 // tot_gibbs_cpp
 List tot_gibbs_cpp(IntegerVector words, IntegerVector doc_ptr, NumericVector time, NumericVector weight, int K, int V, double alpha, double beta, int n_iter, bool verbose);
-RcppExport SEXP _topicovertime_tot_gibbs_cpp(SEXP wordsSEXP, SEXP doc_ptrSEXP, SEXP timeSEXP, SEXP weightSEXP, SEXP KSEXP, SEXP VSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP n_iterSEXP, SEXP verboseSEXP) {
+RcppExport SEXP _topicsovertime_tot_gibbs_cpp(SEXP wordsSEXP, SEXP doc_ptrSEXP, SEXP timeSEXP, SEXP weightSEXP, SEXP KSEXP, SEXP VSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP n_iterSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -32,7 +32,7 @@ END_RCPP
 }
 // tot_foldin_cpp
 IntegerMatrix tot_foldin_cpp(IntegerVector words, IntegerVector doc_ptr, NumericVector time, NumericVector weight, NumericMatrix phi, NumericMatrix psi, double alpha, int n_iter);
-RcppExport SEXP _topicovertime_tot_foldin_cpp(SEXP wordsSEXP, SEXP doc_ptrSEXP, SEXP timeSEXP, SEXP weightSEXP, SEXP phiSEXP, SEXP psiSEXP, SEXP alphaSEXP, SEXP n_iterSEXP) {
+RcppExport SEXP _topicsovertime_tot_foldin_cpp(SEXP wordsSEXP, SEXP doc_ptrSEXP, SEXP timeSEXP, SEXP weightSEXP, SEXP phiSEXP, SEXP psiSEXP, SEXP alphaSEXP, SEXP n_iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -50,12 +50,12 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_topicovertime_tot_gibbs_cpp", (DL_FUNC) &_topicovertime_tot_gibbs_cpp, 10},
-    {"_topicovertime_tot_foldin_cpp", (DL_FUNC) &_topicovertime_tot_foldin_cpp, 8},
+    {"_topicsovertime_tot_gibbs_cpp", (DL_FUNC) &_topicsovertime_tot_gibbs_cpp, 10},
+    {"_topicsovertime_tot_foldin_cpp", (DL_FUNC) &_topicsovertime_tot_foldin_cpp, 8},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_topicovertime(DllInfo *dll) {
+RcppExport void R_init_topicsovertime(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }
