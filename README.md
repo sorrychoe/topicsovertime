@@ -118,7 +118,7 @@ If you use this package, please cite the original paper:
 
 ## License
 
-[MIT](LICENSE.md) © Jaeseong Choe
+[MIT](https://github.com/sorrychoe/topicsovertime/blob/release/LICENSE.md) © Jaeseong Choe
 
 ## Have an issue?
 
