@@ -102,10 +102,10 @@ SIGKDD International Conference on Knowledge Discovery and Data Mining*,
 
 ## See also
 
-[`predict.tot()`](https://sorrychoe.github.io/topicovertime/reference/predict.tot.md),
-[`topic_time()`](https://sorrychoe.github.io/topicovertime/reference/topic_time.md),
-[`terms.tot()`](https://sorrychoe.github.io/topicovertime/reference/terms.tot.md),
-[`plot.tot()`](https://sorrychoe.github.io/topicovertime/reference/plot.tot.md)
+[`predict.tot()`](https://sorrychoe.github.io/topicsovertime/reference/predict.tot.md),
+[`topic_time()`](https://sorrychoe.github.io/topicsovertime/reference/topic_time.md),
+[`terms.tot()`](https://sorrychoe.github.io/topicsovertime/reference/terms.tot.md),
+[`plot.tot()`](https://sorrychoe.github.io/topicsovertime/reference/plot.tot.md)
 
 ## Examples
 

@@ -25,7 +25,7 @@ plot(
 - type:
 
   `"trend"` plots
-  [`topic_time()`](https://sorrychoe.github.io/topicovertime/reference/topic_time.md)
+  [`topic_time()`](https://sorrychoe.github.io/topicsovertime/reference/topic_time.md)
   (topic proportions over time); `"density"` plots each topic's Beta
   density over time.
 

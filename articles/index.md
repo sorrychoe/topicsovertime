@@ -3,4 +3,4 @@
 ### Get started
 
 - [Getting started with
-  topicovertime](https://sorrychoe.github.io/topicovertime/articles/topicovertime.md):
+  topicsovertime](https://sorrychoe.github.io/topicsovertime/articles/topicsovertime.md):

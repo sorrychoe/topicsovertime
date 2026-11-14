@@ -8,16 +8,16 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/sorrychoe/topicovertime/blob/release/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/sorrychoe/topicsovertime/blob/release/DESCRIPTION)
 
-Choe J (2026). *topicovertime: Topics over Time: A Continuous-Time Topic
-Model*. R package version 0.1.0,
-<https://sorrychoe.github.io/topicovertime/>.
+Choe J (2026). *topicsovertime: Topics over Time: A Continuous-Time
+Topic Model*. R package version 0.1.0,
+<https://sorrychoe.github.io/topicsovertime/>.
 
     @Manual{,
-      title = {topicovertime: Topics over Time: A Continuous-Time Topic Model},
+      title = {topicsovertime: Topics over Time: A Continuous-Time Topic Model},
       author = {Jaeseong Choe},
       year = {2026},
       note = {R package version 0.1.0},
-      url = {https://sorrychoe.github.io/topicovertime/},
+      url = {https://sorrychoe.github.io/topicsovertime/},
     }

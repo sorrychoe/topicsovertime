@@ -1,4 +1,4 @@
-# topicovertime
+# topicsovertime
 
 An R implementation of the **Topics over Time (TOT)** model of [Wang and
 McCallum (2006)](https://doi.org/10.1145/1150402.1150450).
@@ -16,26 +16,26 @@ documents were written:
 
 Inference uses collapsed Gibbs sampling written in C++ (via Rcpp).
 
-Documentation: <https://sorrychoe.github.io/topicovertime/>
+Documentation: <https://sorrychoe.github.io/topicsovertime/>
 
 ## Installation
 
 ``` r
 
 # install.packages("remotes")
-remotes::install_github("sorrychoe/topicovertime")
+remotes::install_github("sorrychoe/topicsovertime")
 ```
 
 ## Usage
 
-[`tot()`](https://sorrychoe.github.io/topicovertime/reference/tot.md)
+[`tot()`](https://sorrychoe.github.io/topicsovertime/reference/tot.md)
 takes a document-term matrix of counts (base `matrix`, a `Matrix` sparse
 matrix, a quanteda `dfm`, or a tm `DocumentTermMatrix`) and one
 timestamp per document (numeric, `Date` or `POSIXct`).
 
 ``` r
 
-library(topicovertime)
+library(topicsovertime)
 library(quanteda)
 
 toks <- tokens(data_corpus_inaugural, remove_punct = TRUE, remove_numbers = TRUE)
@@ -58,20 +58,20 @@ predict(fit, x, type = "time")            # predicted year of each document
 ```
 
 To try the model without any text data,
-[`simulate_tot()`](https://sorrychoe.github.io/topicovertime/reference/simulate_tot.md)
+[`simulate_tot()`](https://sorrychoe.github.io/topicsovertime/reference/simulate_tot.md)
 generates a synthetic corpus from known topics and time distributions.
 
 ## Main functions
 
 | Function | Description |
 |----|----|
-| [`tot()`](https://sorrychoe.github.io/topicovertime/reference/tot.md) | Fit the model by collapsed Gibbs sampling |
+| [`tot()`](https://sorrychoe.github.io/topicsovertime/reference/tot.md) | Fit the model by collapsed Gibbs sampling |
 | [`terms()`](https://rdrr.io/r/stats/terms.html) | Most probable words per topic |
-| [`topic_time()`](https://sorrychoe.github.io/topicovertime/reference/topic_time.md) | Topic proportions at given times, `P(z \| t) ∝ p(t \| ψ_z) P(z)` |
+| [`topic_time()`](https://sorrychoe.github.io/topicsovertime/reference/topic_time.md) | Topic proportions at given times, `P(z \| t) ∝ p(t \| ψ_z) P(z)` |
 | `predict(type = "topics")` | Topic proportions of new documents (fold-in) |
 | `predict(type = "time")` | Predicted timestamps of new documents |
 | [`plot()`](https://rdrr.io/r/graphics/plot.default.html) | Topic trends or topic time densities |
-| [`simulate_tot()`](https://sorrychoe.github.io/topicovertime/reference/simulate_tot.md) | Simulate a corpus from the TOT generative process |
+| [`simulate_tot()`](https://sorrychoe.github.io/topicsovertime/reference/simulate_tot.md) | Simulate a corpus from the TOT generative process |
 
 ## Choosing `time_weight`
 
@@ -130,4 +130,4 @@ MIT © Jaeseong Choe
 ## Have an issue?
 
 If you run into a problem, please open an issue on
-[GitHub](https://github.com/sorrychoe/topicovertime/issues).
+[GitHub](https://github.com/sorrychoe/topicsovertime/issues).

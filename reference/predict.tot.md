@@ -27,7 +27,7 @@ predict(
 - newdata:
 
   A document-term matrix (see
-  [`tot()`](https://sorrychoe.github.io/topicovertime/reference/tot.md)).
+  [`tot()`](https://sorrychoe.github.io/topicsovertime/reference/tot.md)).
   Columns are matched to the training vocabulary by name when both have
   column names; unknown words are dropped. Without names, columns must
   be in training order.
