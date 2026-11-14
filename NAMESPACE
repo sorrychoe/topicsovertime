@@ -13,4 +13,4 @@ importFrom(stats,
   terms
 )
 importMethodsFrom(Matrix,coerce)
-useDynLib(topicovertime, .registration = TRUE)
+useDynLib(topicsovertime, .registration = TRUE)

@@ -1,4 +1,4 @@
-url: https://sorrychoe.github.io/topicovertime/
+url: https://sorrychoe.github.io/topicsovertime/
 
 home:
   title: Topics over Time for R
@@ -12,10 +12,10 @@ template:
   bootswatch: flatly
 
 reference:
-- title: about topicovertime
-  desc:  topicovertime fits the Topics over Time model of Wang and McCallum (2006) in R.
+- title: about topicsovertime
+  desc:  topicsovertime fits the Topics over Time model of Wang and McCallum (2006) in R.
   contents:
-  - topicovertime-package
+  - topicsovertime-package
 - subtitle: model fitting
   contents:
   - tot
@@ -32,7 +32,7 @@ reference:
 articles:
 - title: Get started
   contents:
-  - topicovertime
+  - topicsovertime
 
 footer:
   structure:

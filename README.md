@@ -1,4 +1,4 @@
-# topicovertime
+# topicsovertime
 
 An R implementation of the **Topics over Time (TOT)** model of
 [Wang and McCallum (2006)](https://doi.org/10.1145/1150402.1150450).
@@ -16,13 +16,13 @@ written:
 
 Inference uses collapsed Gibbs sampling written in C++ (via Rcpp).
 
-Documentation: <https://sorrychoe.github.io/topicovertime/>
+Documentation: <https://sorrychoe.github.io/topicsovertime/>
 
 ## Installation
 
 ```r
 # install.packages("remotes")
-remotes::install_github("sorrychoe/topicovertime")
+remotes::install_github("sorrychoe/topicsovertime")
 ```
 
 ## Usage
@@ -32,7 +32,7 @@ sparse matrix, a quanteda `dfm`, or a tm `DocumentTermMatrix`) and one
 timestamp per document (numeric, `Date` or `POSIXct`).
 
 ```r
-library(topicovertime)
+library(topicsovertime)
 library(quanteda)
 
 toks <- tokens(data_corpus_inaugural, remove_punct = TRUE, remove_numbers = TRUE)
@@ -123,4 +123,4 @@ MIT © Jaeseong Choe
 ## Have an issue?
 
 If you run into a problem, please open an issue on
-[GitHub](https://github.com/sorrychoe/topicovertime/issues).
+[GitHub](https://github.com/sorrychoe/topicsovertime/issues).
