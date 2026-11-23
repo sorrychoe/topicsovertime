@@ -40,7 +40,7 @@ simulate_tot(
 - psi:
 
   `n_topics` x 2 matrix of Beta shape parameters. Default: topics
-  centred at evenly spaced times with concentration 20.
+  centered at evenly spaced times with concentration 20.
 
 - alpha:
 

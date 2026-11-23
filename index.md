@@ -8,8 +8,8 @@ distribution over words, a **Beta distribution over continuous time**.
 Topics are found jointly from word co-occurrence and from *when*
 documents were written:
 
-- Time is neither discretized nor modelled with Markov dynamics, so
-  there is no time-slice size to choose.
+- Time is neither discretized nor modeled with Markov dynamics, so there
+  is no time-slice size to choose.
 - The meaning (word distribution) of a topic stays constant. What
   changes over time is how often each topic occurs.
 - A fitted model can predict when an undated document was written.
@@ -125,8 +125,8 @@ If you use this package, please cite the original paper:
 
 ## License
 
-[MIT](https://sorrychoe.github.io/topicsovertime/LICENSE.md) © Jaeseong
-Choe
+[MIT](https://github.com/sorrychoe/topicsovertime/blob/release/LICENSE.md)
+© Jaeseong Choe
 
 ## Have an issue?
 

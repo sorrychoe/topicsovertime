@@ -4,8 +4,8 @@ Topics over Time (TOT; Wang and McCallum, 2006) is a topic model in
 which every topic has, besides its distribution over words, a Beta
 distribution over continuous time. Topics are therefore found jointly
 from word co-occurrence and from *when* documents were written. Time is
-neither discretized nor modelled with Markov dynamics, and the meaning
-of a topic is constant: what changes over time is how often each topic
+neither discretized nor modeled with Markov dynamics, and the meaning of
+a topic is constant: what changes over time is how often each topic
 occurs.
 
 ## A simulated corpus
@@ -41,8 +41,8 @@ centuries.
 
 library(quanteda)
 #> Package version: 4.5.1
-#> Unicode version: 15.1
-#> ICU version: 74.2
+#> Unicode version: 17.0
+#> ICU version: 78.2
 #> Parallel computing: disabled
 #> See https://quanteda.io for tutorials and examples.
 toks <- tokens(data_corpus_inaugural, remove_punct = TRUE,
