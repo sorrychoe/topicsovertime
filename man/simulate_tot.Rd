@@ -24,7 +24,7 @@ simulate_tot(
 \item{doc_length}{Tokens per document.}
 
 \item{psi}{\code{n_topics} x 2 matrix of Beta shape parameters. Default: topics
-centred at evenly spaced times with concentration 20.}
+centered at evenly spaced times with concentration 20.}
 
 \item{alpha}{Dirichlet prior on document-topic proportions.}
 
