@@ -1,4 +1,4 @@
-# topicsovertime
+# topicsovertime <a href="https://sorrychoe.github.io/topicsovertime/"><img src="man/figures/logo.png" align="right" height="139" alt="topicsovertime website" /></a>
 
 An R implementation of the **Topics over Time (TOT)** model of
 [Wang and McCallum (2006)](https://doi.org/10.1145/1150402.1150450).
