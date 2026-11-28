@@ -1,0 +1,30 @@
+bibentry(
+  bibtype = "InProceedings",
+  title = "Topics over Time: A Non-{Markov} Continuous-Time Model of Topical Trends",
+  author = c(person("Xuerui", "Wang"), person("Andrew", "McCallum")),
+  booktitle = "Proceedings of the 12th ACM SIGKDD International Conference on Knowledge Discovery and Data Mining",
+  pages = "424--433",
+  year = "2006",
+  publisher = "ACM",
+  doi = "10.1145/1150402.1150450",
+  textVersion = paste(
+    "Wang, X. and McCallum, A. (2006). Topics over time: a non-Markov",
+    "continuous-time model of topical trends. Proceedings of the 12th ACM",
+    "SIGKDD International Conference on Knowledge Discovery and Data Mining,",
+    "424-433. doi:10.1145/1150402.1150450"
+  )
+)
+
+bibentry(
+  bibtype = "Manual",
+  title = "{topicsovertime}: Topics over Time: A Continuous-Time Topic Model",
+  author = person("Jaeseong", "Choe"),
+  year = "2026",
+  note = paste("R package version", meta$Version),
+  url = "https://sorrychoe.github.io/topicsovertime/",
+  textVersion = paste0(
+    "Choe, J. topicsovertime: Topics over Time: A Continuous-Time Topic Model. ",
+    "R package version ", meta$Version, ". ",
+    "https://sorrychoe.github.io/topicsovertime/"
+  )
+)

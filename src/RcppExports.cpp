@@ -11,8 +11,8 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // tot_gibbs_cpp
-List tot_gibbs_cpp(IntegerVector words, IntegerVector doc_ptr, NumericVector time, NumericVector weight, int K, int V, double alpha, double beta, int n_iter, bool verbose);
-RcppExport SEXP _topicsovertime_tot_gibbs_cpp(SEXP wordsSEXP, SEXP doc_ptrSEXP, SEXP timeSEXP, SEXP weightSEXP, SEXP KSEXP, SEXP VSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP n_iterSEXP, SEXP verboseSEXP) {
+List tot_gibbs_cpp(IntegerVector words, IntegerVector doc_ptr, NumericVector time, NumericVector weight, int K, int V, double alpha, double beta, int n_iter, int burn_in, int thin, int loglik_every, double min_shape, bool verbose);
+RcppExport SEXP _topicsovertime_tot_gibbs_cpp(SEXP wordsSEXP, SEXP doc_ptrSEXP, SEXP timeSEXP, SEXP weightSEXP, SEXP KSEXP, SEXP VSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP n_iterSEXP, SEXP burn_inSEXP, SEXP thinSEXP, SEXP loglik_everySEXP, SEXP min_shapeSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -25,8 +25,12 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
     Rcpp::traits::input_parameter< double >::type beta(betaSEXP);
     Rcpp::traits::input_parameter< int >::type n_iter(n_iterSEXP);
+    Rcpp::traits::input_parameter< int >::type burn_in(burn_inSEXP);
+    Rcpp::traits::input_parameter< int >::type thin(thinSEXP);
+    Rcpp::traits::input_parameter< int >::type loglik_every(loglik_everySEXP);
+    Rcpp::traits::input_parameter< double >::type min_shape(min_shapeSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(tot_gibbs_cpp(words, doc_ptr, time, weight, K, V, alpha, beta, n_iter, verbose));
+    rcpp_result_gen = Rcpp::wrap(tot_gibbs_cpp(words, doc_ptr, time, weight, K, V, alpha, beta, n_iter, burn_in, thin, loglik_every, min_shape, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -50,7 +54,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_topicsovertime_tot_gibbs_cpp", (DL_FUNC) &_topicsovertime_tot_gibbs_cpp, 10},
+    {"_topicsovertime_tot_gibbs_cpp", (DL_FUNC) &_topicsovertime_tot_gibbs_cpp, 14},
     {"_topicsovertime_tot_foldin_cpp", (DL_FUNC) &_topicsovertime_tot_foldin_cpp, 8},
     {NULL, NULL, 0}
 };

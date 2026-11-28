@@ -8,8 +8,16 @@
 #' Timestamps are mapped linearly onto the open interval (0, 1) using the
 #' range of `time`. The Beta parameters are re-estimated by the method of
 #' moments after every sweep, as in the paper, with both shapes kept at or
-#' above 1 (same mean, higher concentration) so densities stay bounded and
-#' topics cannot lock onto the earliest or latest documents.
+#' above `min_shape` (same mean, higher concentration). The default of 1 keeps
+#' densities bounded so topics cannot lock onto the earliest or latest
+#' documents.
+#'
+#' By default the estimates come from the last Gibbs sample, as in the paper.
+#' Setting `burn_in` averages the counts and Beta parameters over the sweeps
+#' after `burn_in`, every `thin`-th sweep counted back from the last one,
+#' which gives estimates that vary less between runs. Averaging assumes
+#' topics do not switch labels during those sweeps, which holds once the
+#' sampler has settled; check `plot(fit, type = "loglik")`.
 #'
 #' @param x A document-term matrix of counts with documents in rows: a base
 #'   `matrix`, a `Matrix` sparse matrix, a quanteda `dfm`, or a tm
@@ -21,6 +29,16 @@
 #'   Default `50 / k`, as in the paper.
 #' @param beta Symmetric Dirichlet prior on topic-word distributions.
 #' @param n_iter Number of Gibbs sweeps.
+#' @param burn_in Number of initial sweeps to discard before averaging.
+#'   `NULL` (default) uses only the last sweep.
+#' @param thin Keep every `thin`-th sweep after `burn_in` for averaging.
+#' @param loglik_every Record the joint log-likelihood every `loglik_every`
+#'   sweeps (and at the last one); `0` turns it off. Recording does not change
+#'   the sampled values.
+#' @param min_shape Lower bound on both Beta shape parameters. `1` (default)
+#'   allows bell-shaped and monotone time profiles; values below 1 also allow
+#'   U-shaped profiles (common early and late) at the risk of topics locking
+#'   onto the first and last documents.
 #' @param time_weight Exponent on the time likelihood, balancing time against
 #'   words. A number (`1` gives the sampler exactly as in the paper), or
 #'   `"inverse_length"` for `1 / N_d`, the alternative the paper describes,
@@ -35,6 +53,9 @@
 #'     \item{psi}{`k` x 2 matrix of Beta shape parameters on the normalized
 #'       time scale.}
 #'     \item{topic_size}{Number of tokens assigned to each topic.}
+#'     \item{loglik}{Data frame of `iteration` and `loglik` (the joint
+#'       log-likelihood of words, topic assignments and weighted timestamps),
+#'       or `NULL` when `loglik_every = 0`.}
 #'   }
 #'   plus the settings used and the information needed to map times back to
 #'   the original scale.
@@ -53,12 +74,24 @@
 #' terms(fit, 5)
 #' @export
 tot <- function(x, time, k, alpha = 50 / k, beta = 0.1, n_iter = 500L,
-                time_weight = 1, verbose = FALSE) {
+                time_weight = 1, burn_in = NULL, thin = 10L,
+                loglik_every = 10L, min_shape = 1, verbose = FALSE) {
   dtm <- as_triplet(x)
   check_count(k, "k", min = 2)
   check_count(n_iter, "n_iter", min = 1)
   check_positive(alpha, "alpha")
   check_positive(beta, "beta")
+  if (is.null(burn_in)) burn_in <- n_iter - 1
+  check_count(burn_in, "burn_in", min = 0)
+  if (burn_in >= n_iter) {
+    stop("`burn_in` must be less than `n_iter`.", call. = FALSE)
+  }
+  check_count(thin, "thin", min = 1)
+  check_count(loglik_every, "loglik_every", min = 0)
+  if (!is.numeric(min_shape) || length(min_shape) != 1 ||
+      !is.finite(min_shape) || min_shape < 0) {
+    stop("`min_shape` must be a non-negative number.", call. = FALSE)
+  }
   if (length(time) != dtm$D) {
     stop("`time` must have one value per document (row of `x`).", call. = FALSE)
   }
@@ -68,7 +101,8 @@ tot <- function(x, time, k, alpha = 50 / k, beta = 0.1, n_iter = 500L,
 
   res <- tot_gibbs_cpp(tok$words, tok$doc_ptr, to_unit(tn, tn$value), weight,
                        as.integer(k), dtm$V, alpha, beta, as.integer(n_iter),
-                       isTRUE(verbose))
+                       as.integer(burn_in), as.integer(thin),
+                       as.integer(loglik_every), min_shape, isTRUE(verbose))
 
   topics <- paste0("Topic", seq_len(k))
   ndk <- t(res$ndk)
@@ -84,6 +118,11 @@ tot <- function(x, time, k, alpha = 50 / k, beta = 0.1, n_iter = 500L,
          topic_size = stats::setNames(res$nk, topics),
          alpha = alpha, beta = beta, k = as.integer(k),
          n_iter = as.integer(n_iter), time_weight = time_weight,
+         burn_in = as.integer(burn_in), thin = as.integer(thin),
+         n_samples = res$n_samples, min_shape = min_shape,
+         loglik = if (length(res$loglik)) {
+           data.frame(iteration = res$loglik_iter, loglik = res$loglik)
+         },
          time = tn[c("range", "attr")], call = match.call()),
     class = "tot"
   )
@@ -95,7 +134,9 @@ print.tot <- function(x, ...) {
   cat("Topics over Time model\n",
       "  topics: ", x$k, ", documents: ", nrow(x$theta),
       ", vocabulary: ", ncol(x$phi), "\n",
-      "  iterations: ", x$n_iter, ", alpha: ", format(x$alpha),
+      "  iterations: ", x$n_iter, ", samples averaged: ",
+      if (is.null(x$n_samples)) 1 else x$n_samples,
+      ", alpha: ", format(x$alpha),
       ", beta: ", format(x$beta), ", time_weight: ", format(x$time_weight), "\n",
       "  time range: ", format(rng[1]), " to ", format(rng[2]), "\n", sep = "")
   invisible(x)

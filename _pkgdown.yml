@@ -22,9 +22,12 @@ reference:
 - subtitle: post-estimation
   contents:
   - terms.tot
+  - top_docs
   - topic_time
   - predict.tot
   - plot.tot
+  - autoplot.tot
+  - tidy.tot
 - subtitle: simulation
   contents:
   - simulate_tot

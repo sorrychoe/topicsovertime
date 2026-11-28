@@ -94,54 +94,103 @@ topic_time <- function(object, times = NULL) {
   p
 }
 
-#' Most probable words per topic
+#' Top words per topic
 #'
 #' @param x A fitted `"tot"` model.
 #' @param n Number of words per topic.
+#' @param type How to rank words within a topic:
+#'   \describe{
+#'     \item{`"prob"`}{Topic-word probability \eqn{\phi_{kv}}{phi_kv}.}
+#'     \item{`"frex"`}{FREX: the weighted harmonic mean of a word's rank in
+#'       frequency (\eqn{\phi_{kv}}{phi_kv}) and in exclusivity
+#'       (\eqn{\phi_{kv} / \sum_j \phi_{jv}}{phi_kv / sum_j phi_jv}), as in
+#'       Bischof and Airoldi (2012). Favors words that are both common in the
+#'       topic and rare in others.}
+#'     \item{`"lift"`}{\eqn{\phi_{kv} / p(v)}{phi_kv / p(v)}, where
+#'       \eqn{p(v)} is the word's overall probability under the model. Favors
+#'       rare, topic-specific words.}
+#'   }
+#' @param frex_weight Weight on exclusivity for `type = "frex"`, in `[0, 1]`.
 #' @param ... Unused.
 #' @return A character matrix with `n` rows and one column per topic.
+#' @references Bischof, J. and Airoldi, E. (2012). Summarizing topical
+#'   content with word frequency and exclusivity. *Proceedings of the 29th
+#'   International Conference on Machine Learning*, 201--208.
 #' @examples
 #' set.seed(1)
 #' sim <- simulate_tot(n_docs = 100, n_topics = 3)
 #' fit <- tot(sim$x, sim$time, k = 3, n_iter = 50)
 #' terms(fit, 5)
+#' terms(fit, 5, type = "frex")
 #' @importFrom stats terms
 #' @export
-terms.tot <- function(x, n = 10L, ...) {
+terms.tot <- function(x, n = 10L, type = c("prob", "frex", "lift"),
+                      frex_weight = 0.5, ...) {
+  type <- match.arg(type)
+  check_count(n, "n", min = 1)
   vocab <- colnames(x$phi)
   if (is.null(vocab)) vocab <- as.character(seq_len(ncol(x$phi)))
+  score <- word_score(x, type, frex_weight)
   n <- min(n, length(vocab))
-  apply(x$phi, 1, function(p) vocab[order(p, decreasing = TRUE)[seq_len(n)]])
+  out <- apply(score, 1, function(s) vocab[order(s, decreasing = TRUE)[seq_len(n)]])
+  if (n == 1) out <- matrix(out, nrow = 1, dimnames = list(NULL, rownames(x$phi)))
+  out
 }
 
-#' Plot topic trends or topic time densities
+#' Most representative documents per topic
+#'
+#' @param object A fitted `"tot"` model.
+#' @param n Number of documents per topic.
+#' @return A matrix with `n` rows and one column per topic, holding the names
+#'   (or row numbers, if the training matrix had no row names) of the
+#'   documents with the highest proportion of each topic.
+#' @examples
+#' set.seed(1)
+#' sim <- simulate_tot(n_docs = 100, n_topics = 3)
+#' fit <- tot(sim$x, sim$time, k = 3, n_iter = 50)
+#' top_docs(fit, 3)
+#' @export
+top_docs <- function(object, n = 5L) {
+  check_count(n, "n", min = 1)
+  docs <- rownames(object$theta)
+  if (is.null(docs)) docs <- as.character(seq_len(nrow(object$theta)))
+  n <- min(n, length(docs))
+  out <- apply(object$theta, 2, function(p) docs[order(p, decreasing = TRUE)[seq_len(n)]])
+  if (n == 1) out <- matrix(out, nrow = 1, dimnames = list(NULL, colnames(object$theta)))
+  out
+}
+
+#' Plot topic trends, topic time densities or the log-likelihood
 #'
 #' @param x A fitted `"tot"` model.
 #' @param type `"trend"` plots [topic_time()] (topic proportions over time);
-#'   `"density"` plots each topic's Beta density over time.
+#'   `"density"` plots each topic's Beta density over time; `"loglik"` plots
+#'   the log-likelihood recorded during fitting, to check convergence.
 #' @param topics Topics to plot (indices or names). Default: all.
 #' @param n Number of time points.
 #' @param legend Draw a legend.
-#' @param ... Passed to [graphics::matplot()].
-#' @return The plotted matrix, invisibly.
+#' @param ... Passed to [graphics::matplot()] or [graphics::plot()].
+#' @return The plotted data, invisibly.
+#' @seealso [autoplot.tot()] for a ggplot2 version.
 #' @examples
 #' set.seed(1)
 #' sim <- simulate_tot(n_docs = 100, n_topics = 3)
 #' fit <- tot(sim$x, sim$time, k = 3, n_iter = 50)
 #' plot(fit)
 #' plot(fit, type = "density")
+#' plot(fit, type = "loglik")
 #' @export
-plot.tot <- function(x, type = c("trend", "density"), topics = NULL,
+plot.tot <- function(x, type = c("trend", "density", "loglik"), topics = NULL,
                      n = 200L, legend = TRUE, ...) {
   type <- match.arg(type)
-  times <- time_grid(x, n)
-  y <- if (type == "trend") {
-    topic_time(x, times)
-  } else {
-    exp(log_beta_grid(x, to_unit(x$time, as.numeric(times))))
+  if (type == "loglik") {
+    ll <- loglik_data(x)
+    graphics::plot(ll$iteration, ll$loglik, type = "l", xlab = "Iteration",
+                   ylab = "Log-likelihood", ...)
+    return(invisible(ll))
   }
-  colnames(y) <- rownames(x$phi)
-  if (!is.null(topics)) y <- y[, topics, drop = FALSE]
+  times <- time_grid(x, n)
+  y <- time_curves(x, type, times, topics)
   ylab <- if (type == "trend") "P(topic | time)" else "Density (normalized time)"
   graphics::matplot(as.numeric(times), y, type = "l", lty = 1, xaxt = "n",
                     xlab = "Time", ylab = ylab, col = seq_len(ncol(y)), ...)
@@ -160,6 +209,43 @@ plot.tot <- function(x, type = c("trend", "density"), topics = NULL,
 }
 
 # ---- helpers --------------------------------------------------------------
+
+# topics x words matrix of scores used to rank words
+word_score <- function(x, type, frex_weight) {
+  phi <- x$phi
+  if (type == "prob") return(phi)
+  if (type == "lift") {
+    pv <- colSums(phi * (x$topic_size / sum(x$topic_size)))
+    return(sweep(phi, 2, pv, "/"))
+  }
+  if (!is.numeric(frex_weight) || length(frex_weight) != 1 ||
+      !is.finite(frex_weight) || frex_weight < 0 || frex_weight > 1) {
+    stop("`frex_weight` must be a number in [0, 1].", call. = FALSE)
+  }
+  excl <- sweep(phi, 2, colSums(phi), "/")
+  ecdf_rank <- function(m) t(apply(m, 1, function(v) rank(v, ties.method = "max") / length(v)))
+  1 / (frex_weight / ecdf_rank(excl) + (1 - frex_weight) / ecdf_rank(phi))
+}
+
+# grid points x topics matrix for type = "trend" or "density"
+time_curves <- function(x, type, times, topics = NULL) {
+  y <- if (type == "trend") {
+    topic_time(x, times)
+  } else {
+    exp(log_beta_grid(x, to_unit(x$time, as.numeric(times))))
+  }
+  colnames(y) <- rownames(x$phi)
+  if (!is.null(topics)) y <- y[, topics, drop = FALSE]
+  y
+}
+
+loglik_data <- function(x) {
+  if (is.null(x$loglik)) {
+    stop("No log-likelihood was recorded; refit with `loglik_every` > 0.",
+         call. = FALSE)
+  }
+  x$loglik
+}
 
 # grid points x topics matrix of Beta log-densities on the unit scale
 log_beta_grid <- function(object, u) {

@@ -1,7 +1,7 @@
 Package: topicsovertime
 Type: Package
 Title: Topics over Time: A Continuous-Time Topic Model
-Version: 0.1.0
+Version: 0.1.0.9000
 Authors@R: person("Jaeseong", "Choe", email = "cjssoote@gmail.com",
     role = c("aut", "cre", "cph"))
 Description: Fits the Topics over Time model of Wang and McCallum (2006)
@@ -24,10 +24,13 @@ Imports:
     Matrix,
     methods,
     Rcpp,
-    stats
+    stats,
+    utils
 LinkingTo:
     Rcpp
 Suggests:
+    generics,
+    ggplot2,
     knitr,
     quanteda,
     rmarkdown,

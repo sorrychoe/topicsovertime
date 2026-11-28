@@ -2,11 +2,11 @@
 % Please edit documentation in R/methods.R
 \name{plot.tot}
 \alias{plot.tot}
-\title{Plot topic trends or topic time densities}
+\title{Plot topic trends, topic time densities or the log-likelihood}
 \usage{
 \method{plot}{tot}(
   x,
-  type = c("trend", "density"),
+  type = c("trend", "density", "loglik"),
   topics = NULL,
   n = 200L,
   legend = TRUE,
@@ -17,7 +17,8 @@
 \item{x}{A fitted \code{"tot"} model.}
 
 \item{type}{\code{"trend"} plots \code{\link[=topic_time]{topic_time()}} (topic proportions over time);
-\code{"density"} plots each topic's Beta density over time.}
+\code{"density"} plots each topic's Beta density over time; \code{"loglik"} plots
+the log-likelihood recorded during fitting, to check convergence.}
 
 \item{topics}{Topics to plot (indices or names). Default: all.}
 
@@ -25,13 +26,13 @@
 
 \item{legend}{Draw a legend.}
 
-\item{...}{Passed to \code{\link[graphics:matplot]{graphics::matplot()}}.}
+\item{...}{Passed to \code{\link[graphics:matplot]{graphics::matplot()}} or \code{\link[graphics:plot]{graphics::plot()}}.}
 }
 \value{
-The plotted matrix, invisibly.
+The plotted data, invisibly.
 }
 \description{
-Plot topic trends or topic time densities
+Plot topic trends, topic time densities or the log-likelihood
 }
 \examples{
 set.seed(1)
@@ -39,4 +40,8 @@ sim <- simulate_tot(n_docs = 100, n_topics = 3)
 fit <- tot(sim$x, sim$time, k = 3, n_iter = 50)
 plot(fit)
 plot(fit, type = "density")
+plot(fit, type = "loglik")
+}
+\seealso{
+\code{\link[=autoplot.tot]{autoplot.tot()}} for a ggplot2 version.
 }

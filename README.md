@@ -62,12 +62,25 @@ synthetic corpus from known topics and time distributions.
 | Function | Description |
 |---|---|
 | `tot()` | Fit the model by collapsed Gibbs sampling |
-| `terms()` | Most probable words per topic |
+| `terms()` | Top words per topic, ranked by probability, FREX or lift |
+| `top_docs()` | Documents with the highest share of each topic |
 | `topic_time()` | Topic proportions at given times, `P(z \| t) ∝ p(t \| ψ_z) P(z)` |
 | `predict(type = "topics")` | Topic proportions of new documents (fold-in) |
 | `predict(type = "time")` | Predicted timestamps of new documents |
-| `plot()` | Topic trends or topic time densities |
+| `plot()`, `autoplot()` | Topic trends, topic time densities or the log-likelihood trace |
+| `tidy()`, `augment()` | Estimates as long data frames (generics, broom, tidytext) |
 | `simulate_tot()` | Simulate a corpus from the TOT generative process |
+
+## Convergence
+
+`tot()` records the joint log-likelihood every 10 sweeps. Check that it has
+leveled off with `plot(fit, type = "loglik")`. By default the estimates come
+from the last Gibbs sample, as in the paper; `burn_in` and `thin` average them
+over several samples instead:
+
+```r
+fit <- tot(x, year, k = 8, n_iter = 500, burn_in = 300, thin = 10)
+```
 
 ## Choosing `time_weight`
 
@@ -102,7 +115,7 @@ it:
   this, a topic could collapse onto the first and last documents with a
   U-shaped `Beta(≈0, ≈0)` density and stay locked there. The cost is that
   U-shaped topics (common early *and* late, rare in between) cannot be
-  represented.
+  represented; lower the bound with `min_shape` to allow them.
 
 The hyper-parameters `alpha` (default `50 / k`) and `beta` (default `0.1`) are
 fixed, as in the paper. The number of topics `k` must be chosen by the user.

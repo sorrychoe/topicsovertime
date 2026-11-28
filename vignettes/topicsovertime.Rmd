@@ -60,6 +60,37 @@ head(data.frame(actual = year, predicted = round(pred)))
 cor(pred, year)
 ```
 
+## Checking convergence and summarizing topics
+
+`tot()` records the joint log-likelihood every `loglik_every` sweeps. Once it
+levels off, `burn_in` and `thin` average the estimates over the remaining
+sweeps instead of using only the last one:
+
+```{r converge}
+set.seed(1)
+fit_avg <- tot(sim$x, sim$time, k = 3, n_iter = 200, burn_in = 100, thin = 10)
+plot(fit_avg, type = "loglik")
+fit_avg$n_samples
+```
+
+Besides the most probable words, `terms()` can rank words by FREX (frequent
+and exclusive) or lift (specific to the topic), and `top_docs()` lists the
+documents most devoted to each topic:
+
+```{r summarize}
+terms(fit_avg, 5, type = "frex")
+top_docs(fit_avg, 3)
+```
+
+With the generics (or broom, tidytext) package, `tidy()` returns the
+estimates as long data frames, and with ggplot2 `autoplot()` draws the same
+plots as `plot()`:
+
+```{r tidy, eval = requireNamespace("generics", quietly = TRUE)}
+head(generics::tidy(fit_avg, matrix = "phi"))
+generics::tidy(fit_avg, matrix = "psi")
+```
+
 ## Balancing words and time
 
 Each token carries the document's timestamp, so a long document's time

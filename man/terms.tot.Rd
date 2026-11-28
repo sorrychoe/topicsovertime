@@ -2,14 +2,29 @@
 % Please edit documentation in R/methods.R
 \name{terms.tot}
 \alias{terms.tot}
-\title{Most probable words per topic}
+\title{Top words per topic}
 \usage{
-\method{terms}{tot}(x, n = 10L, ...)
+\method{terms}{tot}(x, n = 10L, type = c("prob", "frex", "lift"), frex_weight = 0.5, ...)
 }
 \arguments{
 \item{x}{A fitted \code{"tot"} model.}
 
 \item{n}{Number of words per topic.}
+
+\item{type}{How to rank words within a topic:
+\describe{
+\item{\code{"prob"}}{Topic-word probability \eqn{\phi_{kv}}{phi_kv}.}
+\item{\code{"frex"}}{FREX: the weighted harmonic mean of a word's rank in
+frequency (\eqn{\phi_{kv}}{phi_kv}) and in exclusivity
+(\eqn{\phi_{kv} / \sum_j \phi_{jv}}{phi_kv / sum_j phi_jv}), as in
+Bischof and Airoldi (2012). Favors words that are both common in the
+topic and rare in others.}
+\item{\code{"lift"}}{\eqn{\phi_{kv} / p(v)}{phi_kv / p(v)}, where
+\eqn{p(v)} is the word's overall probability under the model. Favors
+rare, topic-specific words.}
+}}
+
+\item{frex_weight}{Weight on exclusivity for \code{type = "frex"}, in \verb{[0, 1]}.}
 
 \item{...}{Unused.}
 }
@@ -17,11 +32,17 @@
 A character matrix with \code{n} rows and one column per topic.
 }
 \description{
-Most probable words per topic
+Top words per topic
 }
 \examples{
 set.seed(1)
 sim <- simulate_tot(n_docs = 100, n_topics = 3)
 fit <- tot(sim$x, sim$time, k = 3, n_iter = 50)
 terms(fit, 5)
+terms(fit, 5, type = "frex")
+}
+\references{
+Bischof, J. and Airoldi, E. (2012). Summarizing topical
+content with word frequency and exclusivity. \emph{Proceedings of the 29th
+International Conference on Machine Learning}, 201--208.
 }

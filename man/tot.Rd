@@ -12,6 +12,10 @@ tot(
   beta = 0.1,
   n_iter = 500L,
   time_weight = 1,
+  burn_in = NULL,
+  thin = 10L,
+  loglik_every = 10L,
+  min_shape = 1,
   verbose = FALSE
 )
 }
@@ -38,6 +42,20 @@ words. A number (\code{1} gives the sampler exactly as in the paper), or
 which treats each document's timestamp as one observation. The paper
 reports that results are sensitive to this setting.}
 
+\item{burn_in}{Number of initial sweeps to discard before averaging.
+\code{NULL} (default) uses only the last sweep.}
+
+\item{thin}{Keep every \code{thin}-th sweep after \code{burn_in} for averaging.}
+
+\item{loglik_every}{Record the joint log-likelihood every \code{loglik_every}
+sweeps (and at the last one); \code{0} turns it off. Recording does not change
+the sampled values.}
+
+\item{min_shape}{Lower bound on both Beta shape parameters. \code{1} (default)
+allows bell-shaped and monotone time profiles; values below 1 also allow
+U-shaped profiles (common early and late) at the risk of topics locking
+onto the first and last documents.}
+
 \item{verbose}{Print progress every 50 iterations.}
 }
 \value{
@@ -48,6 +66,9 @@ An object of class \code{"tot"}, a list with
 \item{psi}{\code{k} x 2 matrix of Beta shape parameters on the normalized
 time scale.}
 \item{topic_size}{Number of tokens assigned to each topic.}
+\item{loglik}{Data frame of \code{iteration} and \code{loglik} (the joint
+log-likelihood of words, topic assignments and weighted timestamps),
+or \code{NULL} when \code{loglik_every = 0}.}
 }
 plus the settings used and the information needed to map times back to
 the original scale.
@@ -62,8 +83,16 @@ jointly by word co-occurrence and by when documents were written.
 Timestamps are mapped linearly onto the open interval (0, 1) using the
 range of \code{time}. The Beta parameters are re-estimated by the method of
 moments after every sweep, as in the paper, with both shapes kept at or
-above 1 (same mean, higher concentration) so densities stay bounded and
-topics cannot lock onto the earliest or latest documents.
+above \code{min_shape} (same mean, higher concentration). The default of 1 keeps
+densities bounded so topics cannot lock onto the earliest or latest
+documents.
+
+By default the estimates come from the last Gibbs sample, as in the paper.
+Setting \code{burn_in} averages the counts and Beta parameters over the sweeps
+after \code{burn_in}, every \code{thin}-th sweep counted back from the last one,
+which gives estimates that vary less between runs. Averaging assumes
+topics do not switch labels during those sweeps, which holds once the
+sampler has settled; check \code{plot(fit, type = "loglik")}.
 }
 \examples{
 set.seed(1)

@@ -38,8 +38,12 @@ static inline int draw(const std::vector<double>& cum) {
 
 // Method-of-moments Beta update (paper, Section 2). Topics with too few
 // tokens or zero spread keep their previous parameters.
+// Both shapes are kept >= min_shape (same mean, higher concentration). With
+// min_shape = 1 densities stay bounded; shapes below 1 put infinite density
+// at t = 0 or 1, which lets a topic lock onto the earliest/latest documents
+// (seen on real corpora: Beta(3e-4, 1e-4)).
 static void update_psi(const IntegerMatrix& ndk, const NumericVector& time,
-                       NumericMatrix& psi) {
+                       double min_shape, NumericMatrix& psi) {
   const int K = ndk.nrow(), D = ndk.ncol();
   for (int k = 0; k < K; ++k) {
     double s0 = 0, s1 = 0, s2 = 0;
@@ -52,25 +56,55 @@ static void update_psi(const IntegerMatrix& ndk, const NumericVector& time,
     if (v <= 1e-10) continue;
     double common = m * (1 - m) / v - 1;
     if (common <= 0) continue;
-    // Keep both shapes >= 1 (same mean, higher concentration). Shapes below 1
-    // put infinite density at t = 0 or 1, which lets a topic lock onto the
-    // earliest/latest documents (seen on real corpora: Beta(3e-4, 1e-4)).
-    common = std::max(common, 1.0 / std::min(m, 1 - m));
+    if (min_shape > 0) common = std::max(common, min_shape / std::min(m, 1 - m));
     psi(k, 0) = m * common;
     psi(k, 1) = (1 - m) * common;
   }
 }
 
+// Joint log-likelihood log p(w, z, t | alpha, beta, psi) with the time term
+// weighted per document, as in the sampler.
+static double log_lik(const IntegerMatrix& ndk, const IntegerMatrix& nkw,
+                      const IntegerVector& nk, const IntegerVector& doc_ptr,
+                      const NumericVector& time, const NumericVector& weight,
+                      const NumericMatrix& psi, double alpha, double beta) {
+  const int K = ndk.nrow(), D = ndk.ncol(), V = nkw.ncol();
+  double ll = K * (std::lgamma(V * beta) - V * std::lgamma(beta)) +
+              D * (std::lgamma(K * alpha) - K * std::lgamma(alpha));
+  for (int k = 0; k < K; ++k) {
+    for (int v = 0; v < V; ++v) ll += std::lgamma(nkw(k, v) + beta);
+    ll -= std::lgamma(nk[k] + V * beta);
+  }
+  for (int d = 0; d < D; ++d) {
+    ll -= std::lgamma(doc_ptr[d + 1] - doc_ptr[d] + K * alpha);
+    for (int k = 0; k < K; ++k) {
+      const int c = ndk(k, d);
+      ll += std::lgamma(c + alpha);
+      if (c > 0) ll += weight[d] * c * log_beta_pdf(time[d], psi(k, 0), psi(k, 1));
+    }
+  }
+  return ll;
+}
+
+// Estimates average the counts and Beta parameters over the sweeps after
+// burn_in, every thin-th sweep counted back from the last one (so the final
+// sweep is always included). burn_in = n_iter - 1 keeps only the last sample.
 // [[Rcpp::export]]
 List tot_gibbs_cpp(IntegerVector words, IntegerVector doc_ptr,
                    NumericVector time, NumericVector weight, int K, int V,
-                   double alpha, double beta, int n_iter, bool verbose) {
+                   double alpha, double beta, int n_iter, int burn_in,
+                   int thin, int loglik_every, double min_shape, bool verbose) {
   const int D = time.size(), N = words.size();
   const double Vbeta = V * beta;
   IntegerVector z(N), nk(K);
   IntegerMatrix ndk(K, D), nkw(K, V);
   NumericMatrix psi(K, 2);
   std::fill(psi.begin(), psi.end(), 1.0);  // Beta(1, 1): first sweep is plain LDA
+  NumericMatrix ndk_s(K, D), nkw_s(K, V), psi_s(K, 2);
+  NumericVector nk_s(K);
+  int n_samples = 0;
+  std::vector<int> ll_iter;
+  std::vector<double> ll_val;
 
   for (int d = 0; d < D; ++d) {
     for (int i = doc_ptr[d]; i < doc_ptr[d + 1]; ++i) {
@@ -97,13 +131,33 @@ List tot_gibbs_cpp(IntegerVector words, IntegerVector doc_ptr,
         z[i] = k; ndk(k, d)++; nkw(k, w)++; nk[k]++;
       }
     }
-    update_psi(ndk, time, psi);
+    update_psi(ndk, time, min_shape, psi);
+    const int done = it + 1;
+    if (loglik_every > 0 && (done % loglik_every == 0 || done == n_iter)) {
+      ll_iter.push_back(done);
+      ll_val.push_back(log_lik(ndk, nkw, nk, doc_ptr, time, weight, psi,
+                               alpha, beta));
+    }
+    if (done > burn_in && (n_iter - done) % thin == 0) {
+      for (int j = 0; j < ndk.size(); ++j) ndk_s[j] += ndk[j];
+      for (int j = 0; j < nkw.size(); ++j) nkw_s[j] += nkw[j];
+      for (int j = 0; j < K; ++j) nk_s[j] += nk[j];
+      for (int j = 0; j < psi.size(); ++j) psi_s[j] += psi[j];
+      ++n_samples;
+    }
     checkUserInterrupt();
-    if (verbose && ((it + 1) % 50 == 0 || it + 1 == n_iter))
-      Rcout << "iteration " << it + 1 << " / " << n_iter << "\n";
+    if (verbose && (done % 50 == 0 || done == n_iter))
+      Rcout << "iteration " << done << " / " << n_iter << "\n";
   }
-  return List::create(_["ndk"] = ndk, _["nkw"] = nkw, _["nk"] = nk,
-                      _["psi"] = psi);
+  // n_samples >= 1: the last sweep always counts
+  for (double& x : ndk_s) x /= n_samples;
+  for (double& x : nkw_s) x /= n_samples;
+  for (double& x : nk_s) x /= n_samples;
+  for (double& x : psi_s) x /= n_samples;
+  return List::create(_["ndk"] = ndk_s, _["nkw"] = nkw_s, _["nk"] = nk_s,
+                      _["psi"] = psi_s, _["n_samples"] = n_samples,
+                      _["loglik_iter"] = wrap(ll_iter),
+                      _["loglik"] = wrap(ll_val));
 }
 
 // Fold-in for new documents: phi and psi stay fixed, only z is resampled.
